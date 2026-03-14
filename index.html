@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proxim — Built for Setters Who Close</title>
+  <meta name="description" content="Hit your daily targets. Every day. Built for setters who are serious about their numbers."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #020202;
+      --surface: #0d0d0f;
+      --surface2: #141416;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --text: #f0f0f0;
+      --text2: rgba(240,240,240,0.5);
+      --text3: rgba(240,240,240,0.25);
+      --purple: #ff9f0a;
+      --purple2: #e8850a;
+      --purple3: rgba(255,159,10,0.12);
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --glow: 0 0 80px rgba(255,159,10,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(2,2,2,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 0%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-cta {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 0 24px rgba(255,159,10,0.3);
+    }
+    .nav-cta:hover { background: #ffb340; transform: translateY(-1px); box-shadow: 0 4px 32px rgba(255,159,10,0.45); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Radial glow bg */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255,159,10,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Grid lines */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 100%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--purple3);
+      border: 1px solid rgba(255,159,10,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--purple);
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.7s 0.1s forwards;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(46px, 8vw, 88px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -2px;
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-title em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--purple) 0%, #ffb340 50%, var(--purple) 100%);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+    .hero-sub {
+      font-size: clamp(17px, 2.5vw, 21px);
+      color: var(--text2);
+      max-width: 540px;
+      margin: 24px auto 0;
+      line-height: 1.5;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.35s forwards;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 44px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.5s forwards;
+    }
+    .btn-primary {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 100px;
+      font-size: 17px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s;
+      box-shadow: 0 0 40px rgba(255,159,10,0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 48px rgba(255,159,10,0.5); background: #ffb340; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+      padding: 16px 36px;
+      border-radius: 100px;
+      font-size: 17px;
+      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--purple); color: var(--purple); transform: translateY(-2px); }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 32px 40px;
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff, var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-lbl { font-size: 14px; color: var(--text3); margin-top: 2px; }
+
+    /* ── PAIN SECTION ── */
+    .pain {
+      padding: 120px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(34px, 5vw, 58px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+      max-width: 700px;
+    }
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    .pain-card {
+      background: var(--surface);
+      padding: 40px 36px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .pain-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--purple), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .pain-card:hover { background: var(--surface2); }
+    .pain-card:hover::before { opacity: 1; }
+    .pain-icon { font-size: 28px; margin-bottom: 20px; display: block; }
+    .pain-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+    .pain-desc { font-size: 15px; color: var(--text2); line-height: 1.6; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 80px 24px 120px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .features-header { text-align: center; margin-bottom: 80px; }
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .feat-card:hover { border-color: rgba(255,159,10,0.3); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(255,159,10,0.08); }
+    .feat-card.featured {
+      background: linear-gradient(135deg, rgba(255,159,10,0.12), rgba(255,159,10,0.04));
+      border-color: rgba(255,159,10,0.25);
+    }
+    .feat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 60px;
+      font-weight: 800;
+      color: var(--purple);
+      opacity: 0.12;
+      position: absolute;
+      top: 16px; right: 24px;
+      line-height: 1;
+    }
+    .feat-icon { font-size: 32px; margin-bottom: 20px; }
+    .feat-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .feat-desc { font-size: 15px; color: var(--text2); line-height: 1.65; }
+    .feat-tag {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--purple);
+      background: var(--purple3);
+      border: 1px solid rgba(255,159,10,0.2);
+      border-radius: 100px;
+      padding: 3px 12px;
+    }
+
+    /* ── MOCK PHONE ── */
+    .phone-section {
+      padding: 80px 24px 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-section::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(circle, rgba(255,159,10,0.1) 0%, transparent 70%);
+    }
+    .phone-mock {
+      width: 280px;
+      background: #111;
+      border-radius: 40px;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 16px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 60px rgba(255,159,10,0.12);
+      position: relative;
+      z-index: 2;
+    }
+    .phone-screen {
+      background: #000;
+      border-radius: 28px;
+      padding: 20px;
+      overflow: hidden;
+    }
+    .phone-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .phone-logo-txt { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #fff, #ff9f0a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .phone-date-txt { font-size: 10px; color: rgba(255,255,255,0.4); }
+    .phone-mode { display: flex; background: #1c1c1e; border-radius: 10px; padding: 3px; margin-bottom: 14px; }
+    .phone-mbtn { flex: 1; padding: 6px; border-radius: 8px; text-align: center; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.4); }
+    .phone-mbtn.active { background: #2c2c2e; color: #ff9f0a; }
+    .phone-ring { width: 120px; height: 120px; margin: 0 auto 14px; position: relative; }
+    .phone-ring svg { transform: rotate(-90deg); }
+    .phone-count { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+    .phone-count-num { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: #30d158; }
+    .phone-count-lbl { font-size: 9px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+    .phone-stats { display: flex; gap: 6px; margin-bottom: 14px; }
+    .phone-stat { flex: 1; background: #1c1c1e; border-radius: 8px; padding: 8px 6px; text-align: center; }
+    .phone-stat-num { font-size: 14px; font-weight: 700; }
+    .phone-stat-lbl { font-size: 8px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .phone-prog { background: #2c2c2e; border-radius: 4px; height: 4px; overflow: hidden; margin-bottom: 14px; }
+    .phone-prog-fill { height: 100%; width: 72%; background: linear-gradient(90deg, #ff9f0a, #30d158); border-radius: 4px; }
+    .phone-btns { display: flex; gap: 6px; }
+    .phone-btn { flex: 1; background: #1c1c1e; border-radius: 8px; padding: 8px; text-align: center; font-size: 10px; color: rgba(255,255,255,0.5); }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      padding: 80px 24px 120px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .how-header { text-align: center; margin-bottom: 80px; }
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex;
+      gap: 32px;
+      padding: 40px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--purple);
+      background: var(--purple3);
+      border: 1px solid rgba(255,159,10,0.2);
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .step-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .step-desc { font-size: 16px; color: var(--text2); line-height: 1.6; }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 120px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 800px; height: 500px;
+      background: radial-gradient(ellipse, rgba(255,159,10,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(38px, 6vw, 68px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+      max-width: 700px;
+      margin: 0 auto 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .cta-sub { font-size: 18px; color: var(--text2); margin-bottom: 48px; position: relative; z-index: 2; }
+    .cta-btn-wrap { position: relative; z-index: 2; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #fff, var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .footer-txt { font-size: 13px; color: var(--text3); }
+
+    /* ── SCROLL ANIMATIONS ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 640px) {
+      .pain-grid { grid-template-columns: 1fr; }
+      nav { padding: 16px 20px; }
+      .stats-strip { gap: 40px; padding: 28px 20px; }
+      .pain { padding: 80px 20px; }
+      .features { padding: 60px 20px 80px; }
+      .phone-section { padding: 60px 20px; }
+      .how { padding: 60px 20px 80px; }
+      .step { flex-direction: column; gap: 16px; }
+      footer { flex-direction: column; text-align: center; padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Proxim</div>
+  <a href="https://app.northlab.site" class="nav-cta">Open App →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    Built for Setters
+  </div>
+
+  <h1 class="hero-title">
+    Stop Guessing.<br/>
+    Start <em>Closing</em>.
+  </h1>
+
+  <p class="hero-sub">
+    The only tracker built for setters who take their numbers seriously. Stay accountable. Hit your goals. Every single day.
+  </p>
+
+  <div class="hero-btns">
+    <a href="https://app.northlab.site" class="btn-primary">
+      🚀 Start Tracking Free
+    </a>
+    <a href="#features" class="btn-secondary">
+      See How It Works ↓
+    </a>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item reveal">
+    <div class="stat-num">100</div>
+    <div class="stat-lbl">daily targets, minimum</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-1">
+    <div class="stat-num">0</div>
+    <div class="stat-lbl">excuses accepted</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-2">
+    <div class="stat-num">∞</div>
+    <div class="stat-lbl">deals possible</div>
+  </div>
+</div>
+
+<!-- PAIN SECTION -->
+<section class="pain">
+  <div class="section-eyebrow reveal">The Problem</div>
+  <h2 class="section-title reveal reveal-delay-1">
+    You're losing money<br/>because you can't<br/>track what matters.
+  </h2>
+
+  <div class="pain-grid">
+    <div class="pain-card reveal">
+      <span class="pain-icon">😤</span>
+      <div class="pain-title">You guess your DM count</div>
+      <div class="pain-desc">You think you sent 80. You actually sent 52. That gap is the difference between a good month and a broke month.</div>
+    </div>
+    <div class="pain-card reveal reveal-delay-1">
+      <span class="pain-icon">📉</span>
+      <div class="pain-title">No visibility on your pipeline</div>
+      <div class="pain-desc">How many leads did you generate this week? What's your qualified conversion rate? You don't know. Your closer doesn't either.</div>
+    </div>
+    <div class="pain-card reveal reveal-delay-2">
+      <span class="pain-icon">🧠</span>
+      <div class="pain-title">Relying on memory is costing you</div>
+      <div class="pain-desc">Every DM you forget to log is a gap in your data. No data means no accountability. No accountability means no growth.</div>
+    </div>
+    <div class="pain-card reveal reveal-delay-3">
+      <span class="pain-icon">🔥</span>
+      <div class="pain-title">Streaks die in silence</div>
+      <div class="pain-desc">You had a 12-day streak. Then one bad day killed it and you didn't even notice. Momentum is everything in this game.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PHONE MOCKUP -->
+<section class="phone-section">
+  <div class="section-eyebrow reveal" style="text-align:center;margin-bottom:16px;">The Solution</div>
+  <h2 class="section-title reveal reveal-delay-1" style="text-align:center;margin:0 auto 60px;max-width:600px;">
+    One tap. Every DM tracked.
+  </h2>
+
+  <div class="phone-mock reveal">
+    <div class="phone-screen">
+      <div class="phone-hdr">
+        <div class="phone-logo-txt">Proxim</div>
+        <div class="phone-date-txt">Wed, Mar 11</div>
+      </div>
+      <div class="phone-mode">
+        <div class="phone-mbtn active">📨 DMs</div>
+        <div class="phone-mbtn">📞 Calls</div>
+      </div>
+      <div class="phone-ring">
+        <svg width="120" height="120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#2c2c2e" stroke-width="8"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#30d158" stroke-width="8"
+            stroke-dasharray="326.7" stroke-dashoffset="91.5" stroke-linecap="round"
+            style="filter:drop-shadow(0 0 8px #30d158)"/>
+        </svg>
+        <div class="phone-count">
+          <div class="phone-count-num">72</div>
+          <div class="phone-count-lbl">Goal Hit 🏆</div>
+        </div>
+      </div>
+      <div class="phone-stats">
+        <div class="phone-stat"><div class="phone-stat-num" style="color:#ff9f0a">72</div><div class="phone-stat-lbl">DMed</div></div>
+        <div class="phone-stat"><div class="phone-stat-num" style="color:#f59e0b">28</div><div class="phone-stat-lbl">Left</div></div>
+        <div class="phone-stat"><div class="phone-stat-num" style="color:rgba(255,255,255,0.3)">100</div><div class="phone-stat-lbl">Goal</div></div>
+      </div>
+      <div class="phone-prog"><div class="phone-prog-fill"></div></div>
+      <div class="phone-btns">
+        <div class="phone-btn">↩ Undo</div>
+        <div class="phone-btn">↺ Reset</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-header">
+    <div class="section-eyebrow reveal">Features</div>
+    <h2 class="section-title reveal reveal-delay-1" style="margin:0 auto;text-align:center;max-width:600px;">
+      Everything a serious setter needs.
+    </h2>
+  </div>
+
+  <div class="feat-grid">
+    <div class="feat-card featured reveal">
+      <div class="feat-num">01</div>
+      <div class="feat-icon">📨</div>
+      <div class="feat-title">DM + Call Counter</div>
+      <div class="feat-desc">One tap per DM sent. One tap per call dialed. Your count stays accurate because your input is manual and intentional.</div>
+      <div class="feat-tag">Core Feature</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-1">
+      <div class="feat-num">02</div>
+      <div class="feat-icon">🔥</div>
+      <div class="feat-title">Streak Tracker</div>
+      <div class="feat-desc">See how many days in a row you've hit your goal. Protect your streak like it's your income — because it is.</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-2">
+      <div class="feat-num">03</div>
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Week & Month Stats</div>
+      <div class="feat-desc">Week-to-date and month-to-date DMs and calls. Know exactly where you stand against your targets at any point.</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-3">
+      <div class="feat-num">04</div>
+      <div class="feat-icon">⭐</div>
+      <div class="feat-title">Qualified Lead Forms</div>
+      <div class="feat-desc">Log every qualified lead with full contact info, financials, situation, WHY, and notes — ready to hand off to your closer.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-num">05</div>
+      <div class="feat-icon">📋</div>
+      <div class="feat-title">Daily History Log</div>
+      <div class="feat-desc">Every day logged automatically. See your DM and call count per day with visual progress bars.</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-1">
+      <div class="feat-num">06</div>
+      <div class="feat-icon">📱</div>
+      <div class="feat-title">Install on Your Phone</div>
+      <div class="feat-desc">Works like a native app. Add to your home screen on iPhone or Android. No App Store needed. Always one tap away.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="how-header">
+    <div class="section-eyebrow reveal">How It Works</div>
+    <h2 class="section-title reveal reveal-delay-1" style="margin:0 auto;text-align:center;">
+      Simple enough that you'll actually use it.
+    </h2>
+  </div>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Open Proxim on your phone</div>
+        <div class="step-desc">Go to northlab.site on your phone. Add it to your home screen for instant access every day. Takes 30 seconds.</div>
+      </div>
+    </div>
+    <div class="step reveal reveal-delay-1">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Tap every time you send a DM</div>
+        <div class="step-desc">One tap = one DM. The counter goes up. Your progress ring fills. You can see exactly where you stand toward your 100 DM goal in real time.</div>
+      </div>
+    </div>
+    <div class="step reveal reveal-delay-2">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Log your qualified leads</div>
+        <div class="step-desc">When a lead qualifies, fill out the form — name, contact, financials, situation, WHY. Everything your closer needs in one place.</div>
+      </div>
+    </div>
+    <div class="step reveal reveal-delay-3">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Review your numbers</div>
+        <div class="step-desc">Check History for your daily log, WTD and MTD totals, and your streak. Adjust. Improve. Repeat.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title reveal">
+    Ready to actually hit<br/>your daily targets?
+  </h2>
+  <p class="cta-sub reveal reveal-delay-1">Free. No signup. Works on any phone. Start right now.</p>
+  <div class="cta-btn-wrap reveal reveal-delay-2">
+    <a href="https://app.northlab.site" class="btn-primary" style="font-size:19px;padding:18px 48px;">
+      🚀 Open Proxim — It's Free
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Proxim</div>
+  <div class="footer-txt">Built for setters who are serious.</div>
+  <a href="https://app.northlab.site" class="nav-cta">Open App →</a>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Animate phone ring progress on scroll
+  const ringFill = document.querySelector('.phone-ring circle:last-child');
+  const phoneSection = document.querySelector('.phone-section');
+  const phoneObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        ringFill.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)';
+        ringFill.style.strokeDashoffset = '91.5';
+      }
+    });
+  }, { threshold: 0.5 });
+  if (phoneSection) phoneObs.observe(phoneSection);
+
+  // Nav shrink on scroll
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 60) {
+      nav.style.padding = '12px 40px';
+    } else {
+      nav.style.padding = '20px 40px';
+    }
+  });
+</script>
+</body>
+</html>
